@@ -1,63 +1,28 @@
-1. 프로젝트 생성
-mkdir   mypoll  - project 디렉토리
-cd  mypoll
-- project 생성:   `django-admin  startproject  config  .`
-   config: 설정파일들을 저장하는 디렉토리.
-
-- django-admin   startproject  test_project
-   - test_project 라는 프로젝트를 직접 생성.
-
-- 개발서버 실행.
-   -  mypoll >  `python  manage.py  runserver`
-
-2. App 생성
-   1. mypoll> `python  manage.py  startapp  polls`
-            - polls: app이름
-   2. 생성한 app을 프로젝트에 등록
-        - config/settings.py
-            - INSTALLED_APP 에 polls 를 등록
-        - settings.py에 추가 설정
-            - LANGUAGE_CODE = 'ko-kr'
-            - TIME_ZONE = 'Asia/Seoul'
-        - config/urls.py
-        - 파일생성 - polls/urls.py
-
-3. 관리자(superuser) 계정 생성 (터미털 - control + `)
-   - mypoll >  python  manage.py  migrate
-   - mypoll >  python manage.py createsuperuser
-      - 사용자 이름:  username (root)
-      - email 주소:  a@a.com
-      - Password: 1111
-   - python manage.py runserver
-      - http://127.0.0.1:8000/admin
-
-
-4. Model 정의
-   1. Model 클래스 정의 (polls/models.py)
-   2. admin.py에 모델클래스 등록
-   3. python manage.py makemigrations  app이름름
-        - DB에 테이블을 생성/수정할 코드를 생성.
-   4. python manage.py  migrate
-        - DB에 테이블을 생성/수정 한다.
-   - python manage.py runserver
-      - http://127.0.0.1:8000/admin
-
-
-# static 파일
-- join.jpg
-   - account/static/account/imgs
-- survey.png
-   - Mypoll(root)/static_files/imgs
-
-## static 파일을 찾는 순서
-/static/a.jpg
-1. settings.STATICFILES_DIRS  경로
-2. APP/static 
-    - app은 INSTALLED_APP에 등록된 순서대로 찾는다.
-
-# media
-- 파일 업로드 관련 설정.
-
-## settings.py
-MEDIA_URL: 업로드된 파일을 사용자가 요청할때 사용할 시작 PATH
-MEDIA_ROOT: 업로드된 파일들을 저장할 디렉토리 경로.(파일경로)
+```python
+   import json
+   import glob
+   
+   # 🔹 JSON 파일 리스트 가져오기 (현재 디렉토리의 모든 JSON 파일)
+   json_files = glob.glob("data/*.json")  # 'data' 폴더 내 JSON 파일을 가져옴
+   
+   # 🔹 데이터를 저장할 리스트 초기화
+   merged_data = []
+   
+   # 🔹 모든 JSON 파일을 읽어서 리스트에 추가
+   for file in json_files:
+       with open(file, "r", encoding="utf-8") as f:
+           data = json.load(f)  # JSON 파일 로드
+           if isinstance(data, list):  # 데이터가 리스트 형태인지 확인
+               merged_data.extend(data)  # 리스트 확장
+           else:
+               print(f"⚠️ {file} 파일은 리스트 형식이 아닙니다. 건너뜁니다.")
+   
+   # 🔹 중복 제거 (ID 기준)
+   merged_data = {item["id"]: item for item in merged_data}.values()
+   
+   # 🔹 합친 데이터를 새로운 JSON 파일로 저장
+   with open("merged_data.json", "w", encoding="utf-8") as f:
+       json.dump(list(merged_data), f, ensure_ascii=False, indent=4)
+   
+   print(f"✅ {len(json_files)}개의 JSON 파일을 병합했습니다.")
+```
